@@ -23,7 +23,7 @@
 export TERM=xterm-256color
 
 PROGNAME=${0##*/}
-VERSION="0.0.6"
+VERSION="0.0.7"
 
 INFO_FILE="$HOME/.envs"
 
@@ -102,7 +102,7 @@ usage() {
 
 help_message() {
   cat <<- EOF
-$(tput setaf 6)$PROGNAME (ver. $VERSION)$(tput sgr0)
+$(tput setaf 6)$PROGNAME (version $VERSION)$(tput sgr0)
 wrapper for user-submitted scripts and users_info.json entrys
 supports user settings, submission and admin approval
 $(usage)
@@ -271,7 +271,8 @@ case "$1" in
         sudo ln -s "$(readlink -f "$script")" /envs/bin/"$script_name"
         sudo cp "$scr"/description.txt /envs/descriptions/"$script_name"
         sudo touch "$scr"/approved
-        sudo chmod 664 /envs/descriptions/*
+        sudo chmod -R 664 /envs/descriptions
+        sudo chown -R root:envs /envs/descriptions /envs/bin
         echo "your submission of $script_name has been approved and is now available at /envs/bin/$script_name" | /usr/sbin/sendmail "$user"
       done
     done
@@ -309,7 +310,7 @@ case "$1" in
   ;;
 
   set)
-    if [ -z "$(sed -n /^"$2"=/p "$INFO_FILE")" ]; then
+    if [[ -z "$(sed -n /^"$2"=/p "$INFO_FILE")" ]]; then
       echo "${2}=${3}" >> "$INFO_FILE"
     else
       sed -i "s#${2}=.*#${2}=${3}#" "$INFO_FILE"
