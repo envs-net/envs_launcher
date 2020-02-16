@@ -23,7 +23,7 @@
 export TERM=xterm-256color
 
 PROGNAME=${0##*/}
-VERSION="0.0.8"
+VERSION="0.1.0"
 
 INFO_FILE="$HOME/.envs"
 
@@ -162,6 +162,24 @@ sudo envs approve
 EOF
 }
 
+#
+# envs config
+envs_show() { cat "$INFO_FILE" ; }
+
+envs_edit() { if [[ -n "$EDITOR" ]]; then "$EDITOR" "$INFO_FILE"; else nano "INFO_FILE"; fi ; }
+
+envs_get() { sed -n "/^$1=/{s#^.*=##;p}" "$INFO_FILE" ; }
+
+envs_set() {
+  if [[ -z "$(sed -n /^"$1"=/p "$INFO_FILE")" ]]; then
+    echo "${1}=${2}" >> "$INFO_FILE"
+  else
+    sed -i "s#${1}=.*#${1}=${2}#" "$INFO_FILE"
+  fi
+}
+
+envs_unset() { sed -i "s#${1}=.*#${1}=#" "$INFO_FILE" ; }
+
 # add default config if not exists
 if [ ! -f "$INFO_FILE" ]; then
   cat << EOF > "$INFO_FILE"
@@ -186,6 +204,10 @@ ssh_pubkey=0
 
 EOF
 fi
+
+# check default config options
+[ "$(envs_get desc)" == '' ] && envs_set desc 'a short describtion or message'
+[ "$(envs_get ssh_pubkey)" == '' ] && envs_set ssh_pubkey 0
 
 
 # Trap signals
@@ -301,29 +323,15 @@ case "$1" in
   ;;
 
 
-  show)
-    cat "$INFO_FILE"
-  ;;
+  show) envs_show ;;
 
-  edit)
-    if [[ -n "$EDITOR" ]]; then "$EDITOR" "$INFO_FILE"; else nano "INFO_FILE"; fi
-  ;;
+  edit) envs_edit ;;
 
-  get)
-    sed -n "/^$2=/{s#^.*=##;p}" "$INFO_FILE"
-  ;;
+  get) envs_get "$2" ;;
 
-  set)
-    if [[ -z "$(sed -n /^"$2"=/p "$INFO_FILE")" ]]; then
-      echo "${2}=${3}" >> "$INFO_FILE"
-    else
-      sed -i "s#${2}=.*#${2}=${3}#" "$INFO_FILE"
-    fi
-  ;;
+  set) envs_set "$2" "$3" ;;
 
-  unset)
-    sed -i "s#${2}=.*#${2}=#" "$INFO_FILE"
-  ;;
+  unset) envs_unset "$2" ;;
 
 
   *)
