@@ -172,6 +172,10 @@ if [ ! -f "$INFO_FILE" ]; then
 #
 desc=a short describtion or message
 
+# to print your ssh-pubkey in users_info.json enable this option
+# set to 'y' / 'Y' or '1'
+ssh_pubkey=0
+
 # add more informations (max. 10 entrys)
 #git=
 #mastodon=
