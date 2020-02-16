@@ -23,7 +23,7 @@
 export TERM=xterm-256color
 
 PROGNAME=${0##*/}
-VERSION="0.0.7"
+VERSION="0.0.8"
 
 INFO_FILE="$HOME/.envs"
 
