@@ -197,7 +197,7 @@ ssh_pubkey=0
 # add more informations (max. 10 entrys)
 #git=
 #mastodon=
-# you can also add a array with unlimeted entrys
+# you can also add a array. (each with 32 lines limit)
 #name=line1
 #name=line2
 #nametwo=line1
