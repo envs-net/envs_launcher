@@ -297,7 +297,7 @@ case "$1" in
         sudo ln -s "$(readlink -f "$script")" /envs/bin/"$script_name"
         sudo cp "$scr"/description.txt /envs/descriptions/"$script_name"
         sudo touch "$scr"/approved
-        sudo chmod -R 755 /envs/descriptions
+        sudo chmod -R 664 /envs/descriptions ; sudo chmod 755 /envs/descriptions
         sudo chown -R root:envs /envs/descriptions /envs/bin
         echo "your submission of $script_name has been approved and is now available at /envs/bin/$script_name" | /usr/sbin/sendmail "$user"
       done
