@@ -45,7 +45,7 @@ isroot() {
 }
 
 error_exit() {
-  echo -e "${1:-"unknown Error"}" >&2
+  printf '%s\n' "${1:-"unknown Error"}" >&2
   exit 1
 }
 
@@ -69,9 +69,9 @@ prompt_confirm() {
     printf "%s [y/n]: " "${1:-continue?}"
     read -r REPLY
     case $REPLY in
-      [yY]) printf "\n" ; return 0 ;;
-      [nN]) printf "\n" ; return 1 ;;
-      *) printf " \033[31m %s \n\033[0m" "invalid input" ;;
+      [yY]) printf '\n' ; return 0 ;;
+      [nN]) printf '\n' ; return 1 ;;
+      *) printf ' \033[31m invalid input \n\033[0m' ;;
     esac
   done
 }
@@ -93,25 +93,25 @@ usage() {
   printf '  %s show                  - show your config file\n' "$PROGNAME"
   printf '  %s edit                  - edit your config file\n' "$PROGNAME"
   printf '  %s get <entry>           - show a entry from your config\n' "$PROGNAME"
-  printf "  %s set <entry> <'value'> - set a entry to your config\n" "$PROGNAME"
+  printf '  %s set <entry> <'\''value'\''> - set a entry to your config\n' "$PROGNAME"
   printf '  %s unset <entry>         - unset a entry from your config\n' "$PROGNAME"
 
   if [[ :$PATH: != *:"/envs/bin":* ]] ; then
-    printf "\nadd /envs/bin to your PATH to use approved scripts without this wrapper\n"
-    printf "if you're using bash, run the following to add it quickly\n"
+    printf '\nadd /envs/bin to your PATH to use approved scripts without this wrapper\n'
+    printf 'if you'\''re using bash, run the following to add it quickly\n'
     printf "  echo 'export PATH=\$PATH:/envs/bin' >> ~/.bashrc && source ~/.bashrc\n"
   fi
 }
 
 help_message() {
-  printf "%s%s (version %s)%s\n" "$(tput setaf 6)" "$PROGNAME" "$VERSION" "$(tput sgr0)"
-  printf "wrapper for user-submitted scripts and users_info.json entrys\n"
-  printf "supports user settings, submission and admin approval\n"
+  printf '%s%s (version %s)%s\n' "$(tput setaf 6)" "$PROGNAME" "$VERSION" "$(tput sgr0)"
+  printf 'wrapper for user-submitted scripts and users_info.json entrys\n'
+  printf 'supports user settings, submission and admin approval\n'
   usage
 }
 
 verify_script_name() {
-  [[ -z $1 ]] && error_exit "please start over and enter the script name"
+  [[ -z $1 ]] && error_exit "please start over and enter a script name"
 
   if command -v "$1"; then
     if [ "$(command -v "$1")" != "/home/$user/bin/$1" ]; then
@@ -252,7 +252,7 @@ case "$1" in
   ;;
 
   submit)
-    printf "hello, %s! so it's time to submit your script?\n" "$user"
+    printf 'hello, %s! so it'\'s' time to submit your script?\n' "$user"
     submission_checklist
     prompt_confirm "are you ready to continue?" || exit
     printf 'enter the name of your script: '
@@ -275,7 +275,7 @@ case "$1" in
     # submit now
     mkdir -p /envs/pending-submissions/"$user"/"$script_name"
     ln -s "$HOME"/bin/"$script_name" /envs/pending-submissions/"$user"/"$script_name"/"$script_name"
-    printf "%s\n" "$description" > /envs/pending-submissions/"$user"/"$script_name"/description.txt
+    printf '%s\n' "$description" > /envs/pending-submissions/"$user"/"$script_name"/description.txt
     mail_body "$script_name" "$description" | /usr/sbin/sendmail creme
     printf 'script submitted. thanks! :)\n'
   ;;
@@ -304,11 +304,11 @@ case "$1" in
           touch "$scr"/approved
           chmod -R 664 /envs/descriptions ; chmod 755 /envs/descriptions
           chown -R root:envs /envs/descriptions /envs/bin
-          printf "your submission of %s has been approved and is now available at /envs/bin/%s" "$script_name" "$script_name" | /usr/sbin/sendmail "$user"
+          printf 'your submission of %s has been approved and is now available at /envs/bin/%s' "$script_name" "$script_name" | /usr/sbin/sendmail "$user"
         fi
       done
     done
-    printf "~~done for now~~\n"
+    printf '~~done for now~~\n'
   ;;
 
   revoke)
@@ -324,7 +324,7 @@ case "$1" in
     rm /envs/{bin,descriptions}/"$2"
     rm -rf /envs/pending-submissions/"$author"/"$2"
 
-    printf "your script %s has been returned because: %s\nfeel free to resubmit\n" "$2" "$reason" | /usr/sbin/sendmail "$author"
+    printf 'your script %s has been returned because: %s\nfeel free to resubmit\n' "$2" "$reason" | /usr/sbin/sendmail "$author"
     printf '%s revoked and returned to author\n' "$2"
   ;;
 
@@ -347,7 +347,7 @@ case "$1" in
       shift
       exec $prog "$@"
     else
-      printf "%s not found. try %s list to see what's available\n" "$1" "$PROGNAME"
+      printf '%s not found. check %s list to see what'\'s' available\n' "$1" "$PROGNAME"
       help_message
       exit
     fi
